@@ -36,6 +36,10 @@ extension HealthDataStore {
         ]) { _, new in new }
       )
       packetScoreStatus = "Bridge packet-derived scores recomputed"
+      // Homelab sync hook: ships the newly-computed recovery/strain/sleep
+      // scores to goose.compute.casa. No-op unless HomelabSync.plist (in the
+      // bundle) supplied a URL+secret. See GooseSwift/Sync/.
+      syncLatestScoresToHomelab()
     } catch {
       packetScoreStatus = "Bridge score run blocked: \(Self.shortError(error))"
     }
