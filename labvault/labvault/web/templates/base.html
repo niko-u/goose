@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>{% block title %}LabVault{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="brand" href="/">🧪 LabVault</a>
+    <div class="navlinks">
+      <a href="/">Dashboard</a>
+      <a href="/markers">Markers</a>
+      <a href="/reports">Reports</a>
+      <a href="/review">Review</a>
+      <a href="/upload">Upload</a>
+    </div>
+    <div class="navactions">
+      <a class="btn ghost" href="/export.csv">Export CSV</a>
+    </div>
+  </nav>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="foot">
+    Local &amp; private — data never leaves your homelab. Processed with your local model.
+  </footer>
+  <script src="/static/chart.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

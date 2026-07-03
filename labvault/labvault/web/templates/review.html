@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Review queue — LabVault{% endblock %}
+{% block content %}
+<h1>Review queue</h1>
+<p class="muted">Low-confidence extractions, unknown markers, and unconvertible units land here. Approve to keep, reassign to merge into a known marker, or reject to drop.</p>
+
+{% if rows %}
+<table class="data">
+  <thead><tr><th>Marker (as read)</th><th>Value</th><th>Unit</th><th>Date</th><th>From</th><th>Conf.</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td>{{ r.canonical_name }}</td>
+      <td>{{ r.value_text or r.value_num }}</td>
+      <td class="muted">{{ r.unit_raw or '' }}</td>
+      <td class="muted">{{ r.collected_at }}</td>
+      <td class="muted small">{{ r.original_filename }}</td>
+      <td class="muted">{{ '%.0f'|format(r.confidence * 100) }}%</td>
+      <td class="review-actions">
+        <form method="post" action="/review/{{ r.id }}/approve"><button class="btn tiny" type="submit">Approve</button></form>
+        <form method="post" action="/review/{{ r.id }}/reassign" class="inline-form">
+          <select name="marker_id" required>
+            <option value="" disabled selected>Reassign to…</option>
+            {% for m in markers %}<option value="{{ m.id }}">{{ m.canonical_name }}</option>{% endfor %}
+          </select>
+          <label class="chk"><input type="checkbox" name="add_alias" value="1" checked> learn alias</label>
+          <button class="btn tiny" type="submit">Move</button>
+        </form>
+        <form method="post" action="/review/{{ r.id }}/reject"><button class="btn tiny danger" type="submit">Reject</button></form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">Nothing to review. ✅</p>
+{% endif %}
+{% endblock %}

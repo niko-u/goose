@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ marker.canonical_name }} — LabVault{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ marker.canonical_name }}</h1>
+    <p class="muted">{{ marker.category }}{% if marker.canonical_unit %} · canonical unit {{ marker.canonical_unit }}{% endif %}</p>
+  </div>
+  <div class="navactions">
+    <a class="btn ghost" href="/export.csv?marker={{ marker.id }}">CSV</a>
+    <a class="btn ghost" href="/api/marker/{{ marker.id }}">JSON</a>
+  </div>
+</div>
+
+<section class="card">
+  <canvas id="chart" height="110"></canvas>
+  <p id="chart-warn" class="muted small"></p>
+</section>
+
+<section class="card">
+  <h2>Data points</h2>
+  <table class="data">
+    <thead><tr><th>Date</th><th>Value</th><th>Unit</th><th>Range</th><th>Flag</th><th>Source</th><th></th></tr></thead>
+    <tbody>
+    {% for r in series %}
+      <tr class="{% if r.needs_review %}row-review{% endif %}">
+        <td>{{ r.collected_at }}</td>
+        <td>{{ r.value_text or r.value_num }}</td>
+        <td class="muted">{{ r.unit_raw or '' }}</td>
+        <td class="muted">{% if r.ref_low is not none %}{{ r.ref_low }}{% endif %}–{% if r.ref_high is not none %}{{ r.ref_high }}{% endif %}</td>
+        <td>{% if r.flag %}<span class="badge b-{{ r.flag }}">{{ r.flag }}</span>{% endif %}</td>
+        <td class="muted small">{{ r.original_filename }}{% if r.needs_review %} <span class="badge b-info">review</span>{% endif %}</td>
+        <td>
+          <form method="post" action="/result/{{ r.id }}/delete" onsubmit="return confirm('Delete this data point?')">
+            <button class="btn tiny danger" type="submit">✕</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<script>
+  window.LABVAULT_MARKER_ID = {{ marker.id }};
+</script>
+{% endblock %}

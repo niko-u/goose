@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Markers — LabVault{% endblock %}
+{% block content %}
+<h1>Markers</h1>
+<form class="searchbar" method="get" action="/markers">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search markers or categories…">
+  <button class="btn" type="submit">Search</button>
+</form>
+
+{% if markers %}
+<table class="data sortable">
+  <thead><tr><th>Marker</th><th>Category</th><th>Latest</th><th>Range</th><th>Trend</th><th>Points</th><th>Last date</th></tr></thead>
+  <tbody>
+  {% for m in markers %}
+    <tr>
+      <td><a href="/marker/{{ m.id }}">{{ m.canonical_name }}</a></td>
+      <td class="muted">{{ m.category }}</td>
+      <td>
+        {{ m.last_value_text or (m.last_value if m.last_value is not none else '—') }}
+        {{ m.canonical_unit or '' }}
+        {% if m.last_flag %}<span class="badge b-{{ m.last_flag }}">{{ m.last_flag }}</span>{% endif %}
+      </td>
+      <td class="muted">{% if m.last_ref_low is not none %}{{ m.last_ref_low }}{% endif %}–{% if m.last_ref_high is not none %}{{ m.last_ref_high }}{% endif %}</td>
+      <td><span class="spark" data-marker="{{ m.id }}"></span></td>
+      <td class="muted">{{ m.n_results }}</td>
+      <td class="muted">{{ m.last_date }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No markers with data yet. <a href="/upload">Upload a report</a> to get started.</p>
+{% endif %}
+{% endblock %}

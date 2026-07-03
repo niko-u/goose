@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — LabVault{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<section class="stat-row">
+  <div class="stat"><div class="stat-num">{{ summary.markers }}</div><div class="stat-label">Markers tracked</div></div>
+  <div class="stat"><div class="stat-num">{{ summary.results }}</div><div class="stat-label">Data points</div></div>
+  <div class="stat"><div class="stat-num">{{ summary.reports }}</div><div class="stat-label">Reports</div></div>
+  <div class="stat {% if summary.latest_out_of_range %}warn{% endif %}">
+    <div class="stat-num">{{ summary.latest_out_of_range }}</div><div class="stat-label">Out of range (latest)</div></div>
+  <div class="stat {% if summary.needs_review %}review{% endif %}">
+    <div class="stat-num">{{ summary.needs_review }}</div><div class="stat-label">Need review</div></div>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Latest out-of-range</h2>
+    {% if out_of_range %}
+    <table class="data">
+      <thead><tr><th>Marker</th><th>Value</th><th>Range</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for r in out_of_range %}
+        <tr>
+          <td><a href="/marker/{{ r.id }}">{{ r.canonical_name }}</a></td>
+          <td class="flag-{{ r.flag }}">
+            {{ r.value_text or r.value_num }} {{ r.canonical_unit or '' }}
+            <span class="badge b-{{ r.flag }}">{{ r.flag }}</span>
+          </td>
+          <td class="muted">{% if r.ref_low is not none %}{{ r.ref_low }}{% endif %}–{% if r.ref_high is not none %}{{ r.ref_high }}{% endif %}</td>
+          <td class="muted">{{ r.collected_at }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="muted">Nothing out of range in your latest results. 🎉</p>{% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Recent imports</h2>
+    {% if recent %}
+    <ul class="list">
+      {% for rep in recent %}
+      <li>
+        <a href="/report/{{ rep.id }}">{{ rep.original_filename }}</a>
+        <span class="muted"> — {{ rep.collected_date or rep.imported_at[:10] }}
+          {% if rep.status != 'ok' %}<span class="badge b-A">{{ rep.status }}</span>{% endif %}
+          {% if rep.used_ocr %}<span class="badge b-info">OCR</span>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted">No reports yet. <a href="/upload">Upload one</a>.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

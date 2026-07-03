@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ report.original_filename }} — LabVault{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ report.original_filename }}</h1>
+    <p class="muted">
+      {{ report.source_lab or 'Unknown lab' }} ·
+      collected {{ report.collected_date or '—' }} ·
+      reported {{ report.reported_date or '—' }} ·
+      {{ report.page_count }} pages{% if report.used_ocr %} · OCR{% endif %}
+    </p>
+  </div>
+  <form method="post" action="/report/{{ report.id }}/delete" onsubmit="return confirm('Delete this report and all its results?')">
+    <button class="btn danger" type="submit">Delete report</button>
+  </form>
+</div>
+
+<section class="card">
+  <h2>Extracted results ({{ results|length }})</h2>
+  <table class="data">
+    <thead><tr><th>Marker</th><th>Value</th><th>Unit</th><th>Range</th><th>Flag</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for r in results %}
+      <tr class="{% if r.needs_review %}row-review{% endif %}">
+        <td><a href="/marker/{{ r.marker_id }}">{{ r.canonical_name }}</a></td>
+        <td>{{ r.value_text or r.value_num }}</td>
+        <td class="muted">{{ r.unit_raw or '' }}</td>
+        <td class="muted">{{ r.ref_text or '' }}</td>
+        <td>{% if r.flag %}<span class="badge b-{{ r.flag }}">{{ r.flag }}</span>{% endif %}</td>
+        <td class="muted">{{ r.collected_at }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <details>
+    <summary>Redacted text stored for this report</summary>
+    <pre class="redacted">{{ report.redacted_text }}</pre>
+  </details>
+  <p class="muted small">This is exactly what is stored — personal identifiers replaced with [REDACTED]. The original PDF is not kept unless you enabled LABVAULT_KEEP_ORIGINALS.</p>
+</section>
+{% endblock %}

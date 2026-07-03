@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Upload — LabVault{% endblock %}
+{% block content %}
+<h1>Upload lab reports</h1>
+<p class="muted">PDFs are processed locally: text extracted (with OCR for scans), personal identifiers redacted, values pulled by your local model, then stored. The original file is not retained.</p>
+
+<form class="dropzone" method="post" action="/upload" enctype="multipart/form-data" id="dropform">
+  <input type="file" name="files" id="fileinput" accept="application/pdf" multiple hidden>
+  <div class="dz-inner" id="dzinner">
+    <div class="dz-icon">📄</div>
+    <p><strong>Drop PDFs here</strong> or click to choose</p>
+    <p class="muted small">You can select multiple files.</p>
+  </div>
+  <div id="filelist" class="muted small"></div>
+  <button class="btn" type="submit">Ingest</button>
+</form>
+
+{% if results %}
+<section class="card">
+  <h2>Import results</h2>
+  <ul class="list">
+  {% for r in results %}
+    <li>
+      {% if r.status == 'ok' %}✓{% elif r.status == 'skipped' %}•{% else %}✗{% endif %}
+      <strong>{{ r.filename }}</strong> — {{ r.message }}
+      {% if r.report_id %}(<a href="/report/{{ r.report_id }}">view</a>){% endif %}
+      {% if r.warnings %}<ul class="muted small">{% for w in r.warnings %}<li>{{ w }}</li>{% endfor %}</ul>{% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

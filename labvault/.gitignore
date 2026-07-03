@@ -1,0 +1,19 @@
+# Never commit real data
+*.pdf
+*.db
+*.db-wal
+*.db-shm
+.labvault/
+originals/
+inbox/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.coverage

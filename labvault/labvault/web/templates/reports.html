@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Reports — LabVault{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+{% if reports %}
+<table class="data">
+  <thead><tr><th>File</th><th>Lab</th><th>Collected</th><th>Imported</th><th>Pages</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for r in reports %}
+    <tr>
+      <td><a href="/report/{{ r.id }}">{{ r.original_filename }}</a></td>
+      <td class="muted">{{ r.source_lab or '—' }}</td>
+      <td class="muted">{{ r.collected_date or '—' }}</td>
+      <td class="muted">{{ r.imported_at[:10] }}</td>
+      <td class="muted">{{ r.page_count }}{% if r.used_ocr %} <span class="badge b-info">OCR</span>{% endif %}</td>
+      <td>{% if r.status == 'ok' %}<span class="badge b-ok">ok</span>{% else %}<span class="badge b-A">{{ r.status }}</span>{% endif %}</td>
+      <td>
+        <form method="post" action="/report/{{ r.id }}/delete" onsubmit="return confirm('Delete this report and all its results?')">
+          <button class="btn tiny danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No reports yet. <a href="/upload">Upload one</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+[project]
+name = "labvault"
+version = "0.1.0"
+description = "Privacy-first medical lab report anonymizer & tracker. Extracts lab values from PDFs with a local LLM (Gemma via Ollama or any OpenAI-compatible server), strips PII, and tracks every marker over time in SQLite with a local web UI."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",
+    "pymupdf>=1.24",
+]
+
+[project.optional-dependencies]
+ocr = [
+    "pytesseract>=0.3.10",
+    "Pillow>=10.0",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+labvault = "labvault.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["labvault"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
